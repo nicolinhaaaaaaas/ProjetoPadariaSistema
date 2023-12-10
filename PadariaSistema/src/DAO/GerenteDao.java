@@ -1,6 +1,7 @@
 package DAO;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import ENTIDADES.Gerente;
@@ -26,26 +27,80 @@ public class GerenteDao {
         }
     }
 
-    public static void atualizarGerente(){
+    public static void atualizarGerente(Gerente gerente){
+        String sql = "UPDATE gerente SET nome_gerente = ?, login_gerente = ?, senha_gerente = ? WHERE id_gerente = ?";
+        try(PreparedStatement preparedStatement = conexaoGerente.prepareStatement(sql)){
+            preparedStatement.setString(1, gerente.getNomeGerente());
+            preparedStatement.setString(2, gerente.getLoginGerente());
+            preparedStatement.setString(3, gerente.getSenhaGerente());
+            preparedStatement.setInt(4, gerente.getIdGerente());
 
+            preparedStatement.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
-    public static void deletarGerente(){
+    public static void deletarGerente(int idGerente){
+        String sql = "DELETE FROM gerente WHERE id_gerente = ?";
+        try(PreparedStatement preparedStatement = conexaoGerente.prepareStatement(sql)){
+            preparedStatement.setInt(1, idGerente);
 
+            preparedStatement.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
     public static List<Gerente> listarGerente(){
+        List<Gerente> listaGerente = new ArrayList<>();
+        String sql = "SELECT * FROM gerente";
 
-        return null;
+        try(PreparedStatement preparedStatement = conexaoGerente.prepareStatement(sql)){
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()){
+                Gerente gerente = mapearResultSetParaGerente(resultSet);
+                listaGerente.add(gerente);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return listaGerente;
     }
 
     public static Gerente buscarGerentePorId(int idGerente){
+        String sql = "SELECT * FROM gerente WHERE id_gerente = ?";
 
+        try(PreparedStatement preparedStatement = conexaoGerente.prepareStatement(sql)){
+            preparedStatement.setInt(1, idGerente);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                return mapearResultSetParaGerente(resultSet);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
         return null;
     }
 
     public static Gerente buscarGerentePorLoginSenha(String loginGerente, String senhaGerente){
+        String sql = "SELECT * FROM gerente WHERE login_gerente = ? AND senha_gerente = ?";
 
+        try(PreparedStatement preparedStatement = conexaoGerente.prepareStatement(sql)){
+            preparedStatement.setString(1, loginGerente);
+            preparedStatement.setString(2, senhaGerente);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                return mapearResultSetParaGerente(resultSet);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
         return null;
     }
 

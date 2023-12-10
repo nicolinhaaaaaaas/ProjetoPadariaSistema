@@ -1,6 +1,7 @@
 package DAO;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import ENTIDADES.ForneceIngrediente;
@@ -28,17 +29,49 @@ public class ForneceIngredienteDao {
         }
     }
 
-    public static void atualizarForneceIngrediente(){
+    public static void atualizarForneceIngrediente(ForneceIngrediente forneceIngrediente){
+        String sql = "UPDATE fornece_ingrediente SET preco_ingrediente = ?, data_fornecimento = ?, quantidade_fornecida = ? WHERE fk_cnpj_fornecedor = ? AND fk_id_ingrediente = ?";
+        try(PreparedStatement preparedStatement = conexaoForneceIngrediente.prepareStatement(sql)){
+            preparedStatement.setDouble(1, forneceIngrediente.getPrecoIngrediente());
+            preparedStatement.setString(2, forneceIngrediente.getDataFornecimento());
+            preparedStatement.setInt(3, forneceIngrediente.getQuantidadeComprada());
+            preparedStatement.setString(4, forneceIngrediente.getFornecedor().getCNPJ());
+            preparedStatement.setInt(5, forneceIngrediente.getIngrediente().getIdIngrediente());
 
+            preparedStatement.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
-    public static void deletarForneceIngrediente(){
+    public static void deletarForneceIngrediente(String cnpjFornecedor, int idIngrediente){
+        String sql = "DELETE FROM fornece_ingrediente WHERE fk_cnpj_fornecedor = ? AND fk_id_ingrediente = ?";
+        try(PreparedStatement preparedStatement = conexaoForneceIngrediente.prepareStatement(sql)){
+            preparedStatement.setString(1, cnpjFornecedor);
+            preparedStatement.setInt(2, idIngrediente);
 
+            preparedStatement.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
 
     public static List<ForneceIngrediente> listarIngredientePorFornecedor(int cnpjFornecedor){
+        List<ForneceIngrediente> listaForneceIngrediente = new ArrayList<>();
+        String sql = "SELECT * FROM fornece_ingrediente WHERE fk_cnpj_fornecedor = ?";
 
-        return null;
+        try(PreparedStatement preparedStatement = conexaoForneceIngrediente.prepareStatement(sql)){
+            preparedStatement.setInt(1, cnpjFornecedor);
+
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                while(resultSet.next()){
+                    listaForneceIngrediente.add(mapearResultSetParaForneceIngrediente(resultSet));
+                }
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        return listaForneceIngrediente;
     }
 
     public static ForneceIngrediente mapearResultSetParaForneceIngrediente(ResultSet resultSet)throws SQLException{
