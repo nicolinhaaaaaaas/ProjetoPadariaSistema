@@ -76,5 +76,8 @@ public class Cliente {
         return saida;
     }
 
+    public void setCpf(int int1) {
+    }
+
     
 }
