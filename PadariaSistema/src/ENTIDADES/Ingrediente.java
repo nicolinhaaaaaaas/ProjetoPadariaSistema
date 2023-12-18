@@ -16,7 +16,6 @@ public class Ingrediente {
     public Ingrediente(String nomeIngrediente, int quantidadeEstoque, String unidadeMedida) {
         this.nomeIngrediente = nomeIngrediente;
         this.quantidadeEstoque = quantidadeEstoque;
-
         this.unidadeMedida = unidadeMedida;
     }
 

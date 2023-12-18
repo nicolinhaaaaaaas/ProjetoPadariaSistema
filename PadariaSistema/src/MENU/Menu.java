@@ -1,5 +1,4 @@
 package MENU;
-
 import java.util.*;
 
 import ENTIDADES.*;
@@ -374,7 +373,29 @@ public class Menu {
         Scanner entrada = new Scanner(System.in);
 
         try{
-
+            System.out.println("Digite o nome do produto: ");
+            String nome = entrada.nextLine();
+            System.out.println("Digite a quantidade de ingredientes que esse produto levará: ");
+            String quantidade = entrada.nextLine();
+            List<Ingrediente> ingredientes = new ArrayList<Ingrediente>();
+            int qtd = Integer.parseInt(quantidade);
+            do{
+                System.out.println("Digite o nome do ingrediente: ");
+                String nomeIngrediente = entrada.nextLine();
+                System.out.println("Digite a unidade de medida do ingrediente: ");
+                String unidadeMedida = entrada.nextLine();
+                System.out.println("Digite a quantidade utilizada do ingrediente: ");
+                String quantidadeUtilizada = entrada.nextLine();
+                Ingrediente ingrediente = new Ingrediente(nomeIngrediente, Integer.parseInt(quantidadeUtilizada), unidadeMedida);
+                ingredientes.add(ingrediente);
+                qtd--;
+            }while(qtd > 0);
+            System.out.println("Digite o preço do produto: ");
+            String preco = entrada.nextLine();
+            System.out.println("Digite uma breve descrição do produto: ");
+            String descricao = entrada.nextLine();
+            Produto produto = new Produto(nome, descricao, Double.parseDouble(preco), 0);
+            ProdutoServico.cadastrarProduto(produto, ingredientes);
         }catch(Exception e){
             System.out.println("Erro: " + e);
         }finally{
@@ -418,13 +439,113 @@ public class Menu {
         }
     }
 
-    // OPÇÕES PEDIDO /////////////////////////////////////////////////////////////////
+    // OPÇÕES FORNECEDOR /////////////////////////////////////////////////////////////////
 
-    public static void fazerPedido(){
+    public static void cadastrarFornecedor(){
         Scanner entrada = new Scanner(System.in);
 
         try{
+            System.out.println("Digite o nome do fornecedor: ");
+            String nome = entrada.nextLine();
+            System.out.println("Digite o CNPJ do fornecedor: ");
+            String cnpj = entrada.nextLine();
+            System.out.println("Digite o endereço do fornecedor: ");
+            String endereco = entrada.nextLine();
+            System.out.println("Digite o E-Mail do fornecedor: ");
+            String email = entrada.nextLine();
+            System.out.println("Digite o contato do fornecedor: ");
+            String contato = entrada.nextLine();
 
+            Fornecedor fornecedor = new Fornecedor(cnpj, nome, contato, email, endereco);
+
+            System.out.println("Quantas matérias primas esse fornecedor provém?");
+            String quantidade = entrada.nextLine();
+            int qtd = Integer.parseInt(quantidade);
+
+            List<Ingrediente> ingredientes = new ArrayList<>();
+            do{
+                System.out.println("Digite o nome da matéria prima: ");
+                String nomeIngrediente = entrada.nextLine();
+                System.out.println("Digite a unidade de medida da matéria prima: ");
+                String unidadeMedida = entrada.nextLine();
+                Ingrediente ingrediente = new Ingrediente(nomeIngrediente, 0, unidadeMedida);
+                ProdutoServico.cadastrarIngrediente(ingrediente);
+                ingredientes.add(ingrediente);
+                qtd--;
+            }while(qtd > 0);
+
+            ProdutoServico.cadastrarFornecedor(fornecedor, ingredientes);
+        }catch(Exception e){
+            System.out.println("Erro: " + e);
+        }finally{
+            clearBuffer(entrada);
+        }
+    }
+
+    public static void compraIngrediente(){
+        Scanner entrada = new Scanner(System.in);
+
+        try{
+            System.out.println("Fornecedores cadastrados no sistema:");
+            System.out.println(ProdutoServico.listarFornecedor());
+            System.out.println("Digite o CNPJ do fornecedor que deseja comprar: ");
+            String cnpj = entrada.nextLine();
+            Fornecedor fornecedor = ProdutoServico.buscarFornecedorPorCnpj(cnpj);
+            if(fornecedor == null){
+                System.out.println("CNPJ inválido, tente novamente.");
+            }else{
+                System.out.println("Ingredientes fornecidos por essa empresa: ");
+                System.out.println(ProdutoServico.listarIngredientePorFornecedor(fornecedor.getCNPJ()));
+                int escolha = 1;
+                do{
+                    System.out.println("Digite o ID do ingrediente que deseja comprar: (0 para finalizar)");
+                    String id = entrada.nextLine();
+                    escolha = Integer.parseInt(id);
+                    Ingrediente ingrediente = ProdutoServico.buscarIngredientePorId(escolha);
+                    if(ingrediente == null){
+                        System.out.println("ID inválido, tente novamente.");
+                    }else{
+                        System.out.println("Digite a quantidade que deseja comprar: ");
+                        String quantidade = entrada.nextLine();
+                        System.out.println("Digite o preço do ingrediente: ");
+                        String preco = entrada.nextLine();
+                        System.out.println("Digite a data da compra: ");
+                        String data = entrada.nextLine();
+                        ProdutoServico.comprarIngrediente(fornecedor, ingrediente.getIdIngrediente(), Integer.parseInt(quantidade), Double.parseDouble(preco), data);
+                    }   
+                }while(escolha != 0);
+            }
+        }catch(Exception e){
+            System.out.println("Erro: " + e);
+        }finally{
+            clearBuffer(entrada);
+        }
+    }
+
+
+
+    // OPÇÕES PEDIDO /////////////////////////////////////////////////////////////////
+
+    public static void fazerPedido(Cliente cliente){
+        Scanner entrada = new Scanner(System.in);
+
+        try{
+            System.out.println("Produtos cadastrados no sistema:");
+            System.out.println(ProdutoServico.listarProduto());
+            System.out.println("Digite o ID do produto que deseja comprar: ");
+            String id = entrada.nextLine();
+            int escolha = Integer.parseInt(id);
+            Produto produto = ProdutoServico.buscarProdutoPorId(escolha);
+            if(produto == null){
+                System.out.println("ID inválido, tente novamente.");
+            }else{
+                System.out.println("Digite a quantidade que deseja comprar: ");
+                String quantidade = entrada.nextLine();
+                System.out.println("Digite a data da compra: ");
+                String data = entrada.nextLine();
+
+                PedidoServico.fazerPedido(cliente.getCpfCliente(), );
+            }
         }catch(Exception e){
             System.out.println("Erro: " + e);
         }finally{
